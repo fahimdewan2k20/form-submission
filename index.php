@@ -209,13 +209,6 @@
       if ($flag) {
         echo "<p class='error'>* marked fields are required</p>";
       }
-      if (!$flag and $_SERVER["REQUEST_METHOD"] === "POST") {
-        session_start();
-        setcookie("username", $username, time() + 86400);
-    		setcookie("password", $password, time() + 86400);
-
-    		header("Location: login-form.php");
-    	}
     ?>
   </body>
 </html>
