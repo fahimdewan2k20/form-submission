@@ -38,11 +38,13 @@
       $lname = "";
       $gender = "";
       $dob = "";
+      $ageErr = "";
       $religion = "";
       $present = "";
       $permanent = "";
       $tel = "";
       $email = "";
+      $emailErr = "";
       $weblink = "";
       $username = "";
       $password = "";
@@ -78,6 +80,15 @@
         }
         if(!empty($_POST['dob'])) {
           $dob = input($_POST['dob']);
+          // $a = strtotime($dob);
+          // $b = strtotime('now') - 86400*365*15;
+          // echo "<h1>" . $a - $b . "</h1>";
+          if (strtotime($dob) >= (strtotime('now') - 86400*365*15)) {
+            $ageErr = "you must be at least 15 years old";
+          }
+          else {
+            $ageErr = "";
+          }
         }
         else {
           $flag = true;
@@ -99,12 +110,18 @@
         }
         if(!empty($_POST['email'])) {
           $email = input($_POST['email']);
+          if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $emailErr = "invalid email format";
+          }
         }
         else {
           $flag = true;
         }
         if(!empty($_POST['weblink'])) {
           $weblink = input($_POST['weblink']);
+        }
+        else {
+          $flag = true;
         }
         if(!empty($_POST['username'])) {
           $username = input($_POST['username']);
@@ -142,6 +159,7 @@
         <br />
         <label for="dob">Date of Birth<span class="required">*</span>: </label>
         <input type="date" name="dob" value="<?php echo $dob; ?>" />
+        <span class="error"><?php echo $ageErr; ?></span>
         <br />
         <label for="religion">Enter your Religion<span class="required">*</span>: </label>
         <select name="religion">
@@ -166,6 +184,7 @@
         <br />
         <label for="email">Email<span class="required">*</span>: </label>
         <input type="email" name="email" value="<?php echo $email; ?>" />
+        <span class="error"><?php echo $emailErr; ?></span>
         <br />
         <label for="weblink">Personal Website Link: </label>
         <input type="url" name="weblink" value="<?php echo $weblink; ?>" />
@@ -188,8 +207,15 @@
 
     <?php
       if ($flag) {
-        echo "<p class='error'>please check the inserted data carefully</p>";
-    }
+        echo "<p class='error'>* marked fields are required</p>";
+      }
+      if (!$flag and $_SERVER["REQUEST_METHOD"] === "POST") {
+        session_start();
+        setcookie("username", $username, time() + 86400);
+    		setcookie("password", $password, time() + 86400);
+
+    		header("Location: login-form.php");
+    	}
     ?>
   </body>
 </html>
